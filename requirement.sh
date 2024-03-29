@@ -34,8 +34,8 @@ echo -e '\nexport NVM_DIR="$HOME/.nvm"' >> ~/.bashrc
 echo -e '[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"' >> ~/.bashrc
 echo -e '[ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"' >> ~/.bashrc
 
-echo "Environment variables for nvm set up."
+echo "设置环境变量nvm."
 
 npm install -g wrangler@latest
 
-echo "Wrangler installed successfully."
+echo "安装成功."
