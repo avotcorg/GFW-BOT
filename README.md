@@ -74,16 +74,17 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/avotcorg/GFW-BOT/main/in
  chmod +x requirement.sh
  ```
 
-8. Run `requirement.sh`:
+8. Run `dos2unix.py`:
  ```bash
- ./requirement.sh
+python3 dos2unix.py
  ```
 "If you encounter errors running requirement.sh on PythonAnywhere , simply close the console (using `exit` command) , go to file manager and open it and  save it (use `ctrl+s` ) without changing any thing. thats it! now you can run it"
 another solution is converting it using dos2unix 
 since PythonAnyWhere does not support that you can use this simple python code 'dos2unix.py'
 you can run this to solve the issue:
+9.Run `requirement.sh`:
  ```bash
- python3 dos2unix.py
+ ./requirement.sh
  ```
 10. Run `install.py` and provide the required API tokens when prompted:
  ```bash
