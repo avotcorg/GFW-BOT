@@ -870,7 +870,7 @@ async function getVLESSConfig(userID, hostName, sub, userAgent, RproxyIP) {
 	  sni: ${hostName}
 	  client-fingerprint: chrome
 	  ws-opts:
-	    path: "/?ed=2048"
+	    path: "/?end=@warp_key"
 	    headers:
 		  host: ${hostName}
 	---------------------------------------------------------------
@@ -904,17 +904,11 @@ async function getVLESSConfig(userID, hostName, sub, userAgent, RproxyIP) {
 	  sni: ${hostName}
 	  client-fingerprint: chrome
 	  ws-opts:
-		path: "/?ed=2048"
+		path: "/?end=@warp_key"
 		headers:
 		  host: ${hostName}
 	---------------------------------------------------------------
 	################################################################
-	telegram 交流群 技术大佬~在线发牌!
-	https://t.me/CMLiussss
-	---------------------------------------------------------------
-	github 项目地址 Star!Star!Star!!!
-	https://github.com/cmliu/edgetunnel
-	---------------------------------------------------------------
 	################################################################
 	`;
 	} else {
@@ -941,7 +935,7 @@ async function getVLESSConfig(userID, hostName, sub, userAgent, RproxyIP) {
 		try {
 			const response = await fetch(url ,{
 			headers: {
-				'User-Agent': 'CF-Workers-edgetunnel/cmliu'
+				'User-Agent': 'OTC自助订阅'
 			}});
 			content = await response.text();
 			return revertFakeInfo(content, userID, hostName, isBase64);
