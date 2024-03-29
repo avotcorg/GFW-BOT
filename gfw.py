@@ -22,7 +22,7 @@ user_states = {}
 users_directory = 'users'
 index_js_path = 'index.js'
 subs_js_path = 'subworker.js'
-db_path = 'cfw.db'
+db_path = 'gfw.db'
 proxy_message_id = None
 proxy_state = False
 INPUT_NEW_API = 0
@@ -147,7 +147,7 @@ def return_to_start(call):
 
     
 @bot.callback_query_handler(func=lambda call: call.data.startswith('user_panel'))
-def user_panel_cfw(call):
+def user_panel_gfw(call):
     global proxy_state 
     proxy_state = False
     bot.delete_message(call.message.chat.id, call.message.message_id)
@@ -614,7 +614,7 @@ def delete_user(call):
     bot.send_message(call.message.chat.id, f"✅ Worker 订阅用户名'{user_name}' 删除成功.✅", reply_markup=menu_markup)
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('add_user'))
-def add_user_cfw(call):
+def add_user_gfw(call):
 
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     cancel_button = types.KeyboardButton("Cancel")
