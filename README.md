@@ -1,8 +1,5 @@
-[فارسی](https://github.com/2ri4eUI/CFW-BOT/blob/main/README-FA.md) 
-[ENGLISH](https://github.com/2ri4eUI/CFW-BOT/blob/main/README.md)
-
 # CFW-BOT V0.03
-Cloudflare Woker Bot ! No servers needed, just pure Xray link creation, all running smoothly on PythonAnywhere. a Shortcut to internet freedom! ✨"
+Cloudflare Woker 机器人！ 不需要服务器，只需创建纯粹的 Xray 链接，所有这些都可以在 PythonAnywhere 上顺畅运行。 便捷访问互联网！ ✨"
 
 ![image](https://github.com/2ri4eUI/CFW-BOT/assets/139592104/c751fbf4-ebce-441e-aca9-ce121f27d258)
 
