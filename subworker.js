@@ -5,11 +5,12 @@ let mytoken= 'username';//快速订阅访问入口, 留空则不启动快速订�
 
 // 设置优选地址，不带端口号默认443，不支持非TLS订阅生成
 let addresses = [
-	"cfip.xxxxxxxx.tk:8443#TG频道@Warp_Key",
+	"cfip.xxxxxxxx.tk:443#TG频道@Warp_Key",
+	"cfip.xxxxxxxx.tk:2053#TG频道@Warp_Key",
+	"cfip.xxxxxxxx.tk:2083#TG频道@Warp_Key",
 	"cfip.xxxxxxxx.tk:2087#TG频道@Warp_Key",
 	"cfip.xxxxxxxx.tk:2096#TG频道@Warp_Key",
-	"cfip.xxxxxxxx.tk:443#TG频道@Warp_Key",
-	"cfip.xxxxxxxx.tk:2096#TG频道@Warp_Key",
+	"cfip.xxxxxxxx.tk:8443#TG频道@Warp_Key",
 ];
 
 // 设置优选地址api接口
@@ -36,8 +37,8 @@ let proxyIPs = [
 let CMproxyIPs = [
 	{ proxyIP: "proxyip.fxxk.dedyn.io", type: "HK" },
 ];
-let BotToken ='';
-let ChatID =''; 
+let BotToken ='7195618842:AAF5gulA4f9FhSALVPVEsJ2c8ZchJi5kLvQ';
+let ChatID ='5291840179'; 
 let proxyhosts = [//本地代理域名池
 	//'ppfv2tl9veojd-maillazy.pages.dev',
 ];
@@ -186,7 +187,7 @@ export default {
 		if (mytoken !== '' && url.pathname.includes(mytoken)) {
 			host = env.HOST || 'usersubdomain';
 			uuid = env.UUID || 'uuid';
-			path = env.PATH || "/?ed=2048";
+			path = env.PATH || "/?end=@warp_key";
 			edgetunnel = env.ED || edgetunnel;
 			RproxyIP = env.RPROXYIP || RproxyIP;
 
@@ -207,7 +208,7 @@ export default {
 					// 错误处理
 				}	
 			}
-		await sendMessage("#获取订阅", request.headers.get('CF-Connecting-IP'), `UA: ${userAgent}</tg-spoiler>\n域名: ${url.hostname}\n<tg-spoiler>入口: ${url.pathname + url.search}</tg-spoiler>`);
+		await sendMessage("#OTC自助获取订阅", request.headers.get('CF-Connecting-IP'), `UA: ${userAgent}</tg-spoiler>\n域名: ${url.hostname}\n<tg-spoiler>入口: ${url.pathname + url.search}</tg-spoiler>`);
 		} else {
 			host = url.searchParams.get('host');
 			uuid = url.searchParams.get('uuid');
