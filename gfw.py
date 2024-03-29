@@ -45,8 +45,8 @@ def send_welcome(message):
     menu_markup = InlineKeyboardMarkup()
     add_user_button = InlineKeyboardButton("➕ 添加用户", callback_data="add_user")
     user_panel_button = InlineKeyboardButton("🔰 用户面板", callback_data="user_panel")
-    subscriptions_button = InlineKeyboardButton("📋 优选域名或IP订阅", callback_data="subscriptions") 
-    proxy_txt_button = InlineKeyboardButton("📁CF 反代地址", callback_data="proxy_list")
+    subscriptions_button = InlineKeyboardButton("📋 优选域名订阅列表", callback_data="subscriptions") 
+    proxy_txt_button = InlineKeyboardButton("📁反代域名订阅列表", callback_data="proxy_list")
     menu_markup.add(add_user_button, user_panel_button)  
     menu_markup.add(subscriptions_button)
     menu_markup.add(proxy_txt_button)
@@ -61,17 +61,17 @@ def proxylist(call):
     if os.path.isfile(filename):
         with open(filename, 'r') as file:
             proxies_content = file.read()
-        bot.send_message(call.message.chat.id, f"📁| 当前反代:\n<code>{proxies_content}</code>", parse_mode="HTML")
+        bot.send_message(call.message.chat.id, f"📁| 当前优选地址:\n<code>{proxies_content}</code>", parse_mode="HTML")
     else:
-        bot.send_message(call.message.chat.id, "proxies.txt 中未找到反代.")
+        bot.send_message(call.message.chat.id, "proxies.txt 中未找到优选IP或域名.")
     
-    bot.send_message(call.message.chat.id, "请发送新优选的反代列表，每条列表都在单独的行上.\n\n 您可以使用它们来更改用户反代")
+    bot.send_message(call.message.chat.id, "请发送新优选的优选域名，每次发送一条.\n\n 您可以使用它们来更改用户优选域名")
     bot.register_next_step_handler(call.message, handle_proxies_input)
 
 def handle_proxies_input(message):
     if message.text.strip().lower() == 'cancel':
         del user_states[message.from_user.id]
-        bot.send_message(message.chat.id, "❌流程已取消.❌")
+        bot.send_message(message.chat.id, "❌进程已取消.❌")
         send_welcome(message)
         return
     if message.text:
@@ -81,13 +81,13 @@ def handle_proxies_input(message):
             with open(filename, 'w') as file:
                 for proxy in proxies:
                     file.write(proxy.strip() + '\n')
-            bot.send_message(message.chat.id, "✅优选反代保存成功.✅")
+            bot.send_message(message.chat.id, "✅优选域名保存成功.✅")
             send_welcome(message)
         else:
-            bot.send_message(message.chat.id, "没有提供反代。 请发送至少一条反代IP或反代域名.")
+            bot.send_message(message.chat.id, "没有优选域名。 请发送至少一条优选域名.")
             send_welcome(message)
     else:
-        bot.send_message(message.chat.id, "输入无效。 请以文本格式发送反代列表.")
+        bot.send_message(message.chat.id, "输入无效。 请以文本格式发送优选域名.")
         send_welcome(message)
 
 @bot.callback_query_handler(func=lambda call: call.data == 'subscriptions')
@@ -98,7 +98,7 @@ def subscriptions(call):
     message_text = f"优选域名: {ip_api}"
 
     keyboard = [
-        [InlineKeyboardButton("更改优选域名IP或者优选域名", callback_data="change_ip_api"),
+        [InlineKeyboardButton("更改优选域名", callback_data="change_ip_api"),
          InlineKeyboardButton("不改变返回", callback_data="keep_ip_api")]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
@@ -109,7 +109,7 @@ def subscriptions(call):
 def subscriptions(call):
     bot.delete_message(call.message.chat.id, call.message.message_id)
     user_states[call.from_user.id] = 'waiting_for_api'
-    message_text = "请提供改优选域名IP或者优选域名的新值."
+    message_text = "请提供优选域名的新地址."
 
     bot.send_message(call.message.chat.id, message_text)
 
@@ -136,7 +136,7 @@ def handle_new_api_value(message):
     os.environ['IP_API'] = new_api_value
 
     user_states[message.from_user.id] = None
-    bot.send_message(message.chat.id, f"优选域名IP或者优选域名 已更新为: '{new_api_value}'")
+    bot.send_message(message.chat.id, f"优选域名 已更新为: '{new_api_value}'")
     send_welcome(message)
 
 @bot.callback_query_handler(func=lambda call: call.data == 'return')
@@ -147,7 +147,7 @@ def return_to_start(call):
 
     
 @bot.callback_query_handler(func=lambda call: call.data.startswith('user_panel'))
-def user_panel_gfw(call):
+def user_panel_cfw(call):
     global proxy_state 
     proxy_state = False
     bot.delete_message(call.message.chat.id, call.message.message_id)
@@ -161,11 +161,11 @@ def user_panel_gfw(call):
     
     for row in rows:
         name = row[0]
-        callback_data = f"用户名:{name}"  
+        callback_data = f"user:{name}"  
         button = InlineKeyboardButton("👤用户名|" + name, callback_data=callback_data)
         keyboard.add(button)
 
-    change_all_button = InlineKeyboardButton("🆕 用户代理", callback_data="change_all_proxies")
+    change_all_button = InlineKeyboardButton("🆕 优选列表", callback_data="change_all_proxies")
     keyboard.add(change_all_button)
 
     return_button = InlineKeyboardButton("🔙 返回", callback_data="return")
@@ -173,7 +173,7 @@ def user_panel_gfw(call):
     
     connection.close()
 
-    bot.send_message(call.message.chat.id, "选择一个用户:", reply_markup=keyboard)
+    bot.send_message(call.message.chat.id, "Select a user:", reply_markup=keyboard)
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('user:'))
 def user_info_callback(call):
@@ -192,7 +192,7 @@ def user_info_callback(call):
         keyboard = InlineKeyboardMarkup()
         return_button = InlineKeyboardButton("🔙 返回", callback_data="user_panel")
         keyboard.add(return_button)
-        bot.send_message(call.message.chat.id, f"❌ ℹ️ 已删除 '{user_name}', 已失效❌", reply_markup=keyboard)
+        bot.send_message(call.message.chat.id, f"❌ ℹ️ 删除 '{user_name}', 用户失败❌", reply_markup=keyboard)
         connection.close()
         return
 
@@ -207,17 +207,17 @@ def user_info_callback(call):
         message_text = f"<b>🔰用户信息🔰</b>\n\n"
         message_text += f"👤 <b>用户名:</b> {user_name}\n"
         message_text += f"🔑 <b>UUID:</b> {uuid}\n"
-        message_text += f"🌐 <b>IP或域名:</b> {ip}\n"
-        message_text += f"📡 <b>子域名:</b> {subdomain}\n\n"
+        message_text += f"🌐 <b>优选IP或域名:</b> {ip}\n"
+        message_text += f"📡 <b>绑定域名:</b> {subdomain}\n\n"
         message_text += f"🔗开tls: <code>{vless_link}</code>\n\n"
-        message_text += f"🔗未开tls: <code>{nontls_config}</code>\n\n"
+        message_text += f"🔗关tls: <code>{nontls_config}</code>\n\n"
         message_text += f"📋订阅地址: <code>{sub_link}</code>"
 
         keyboard = InlineKeyboardMarkup()
         delete_button = InlineKeyboardButton("🗑️ 删除", callback_data=f"delete:{user_name}")
         qr_button = InlineKeyboardButton("🔲 二维码", callback_data=f"qr:{user_name}")
-        redeploy_button = InlineKeyboardButton("🔄 返回", callback_data=f"redeploy:{user_name}")
-        change_proxy_button = InlineKeyboardButton("🆕 新的反代", callback_data=f"newproxy:{user_name}")
+        redeploy_button = InlineKeyboardButton("🔄 重新部署", callback_data=f"redeploy:{user_name}")
+        change_proxy_button = InlineKeyboardButton("🆕 新优选域名", callback_data=f"newproxy:{user_name}")
         return_button = InlineKeyboardButton("🔙 返回", callback_data="user_panel")
         keyboard.add(delete_button, qr_button)
         keyboard.add(change_proxy_button, redeploy_button)
@@ -225,7 +225,7 @@ def user_info_callback(call):
 
         bot.send_message(call.message.chat.id, message_text, reply_markup=keyboard, parse_mode="HTML")
     else:
-        bot.send_message(call.message.chat.id, "❌ 未找到用户.❌")
+        bot.send_message(call.message.chat.id, "❌进程已取消.❌")
 
 
 def delete_worker(account_id, api_token, worker_name):
@@ -239,9 +239,9 @@ def delete_worker(account_id, api_token, worker_name):
     response = requests.delete(url, headers=headers)
 
     if response.status_code == 200:
-        print(f"Worker '{worker_name}' 已成功从 Cloudflare 删除.")
+        print(f"Worker名称 '{worker_name}' 已成功从 Cloudflare账户中删除.")
     else:
-        print(f"对不起: 删除worker失败 '{worker_name}' (错误码: {response.status_code})")
+        print(f"错误: 无法删除 worker '{worker_name}' (错误号: {response.status_code})")
 
 def delete_sub_worker(account_id, api_token, worker_name):
     url = f"https://api.cloudflare.com/client/v4/accounts/{account_id}/workers/scripts/subworker{worker_name}"
@@ -254,9 +254,9 @@ def delete_sub_worker(account_id, api_token, worker_name):
     response = requests.delete(url, headers=headers)
 
     if response.status_code == 200:
-        print(f"Worker '子域名{worker_name}' 已成功从 Cloudflare 删除.")
+        print(f"Worker '绑定域名{worker_name}' 已成功从 Cloudflare账户中删除.")
     else:
-        print(f"对不起: 删除worker失败 '子域名{worker_name}' (错误码: {response.status_code})")
+        print(f"错误: 无法删除 worker '绑定域名{worker_name}' (错误号: {response.status_code})")
 
 
 
@@ -282,17 +282,17 @@ def change_all_user_proxies(call):
 
     keyboard = InlineKeyboardMarkup()
     for option in options:
-        keyboard.add(InlineKeyboardButton(option, callback_data=f"新的代理列表:{option}"))
+        keyboard.add(InlineKeyboardButton(option, callback_data=f"新的优选列表:{option}"))
     return_button = InlineKeyboardButton("🔙 返回", callback_data="user_panel")
     keyboard.add(return_button)
     connection.close()
 
     if options:
-        proxy_message = bot.send_message(call.message.chat.id, "请从列表中选择新的代理IP或代理域名 或输入新的代理IP或代理域名:", reply_markup=keyboard)
+        proxy_message = bot.send_message(call.message.chat.id, "请从列表中选择新的优选域名或 IP 或输入新的优选域名或 IP:", reply_markup=keyboard)
         proxy_message_id = proxy_message.message_id
         bot.register_next_step_handler(call.message, update_all_proxies, users, proxy_message_id)
     else:
-        bot.send_message(call.message.chat.id, "没有可用的代理地址.")
+        bot.send_message(call.message.chat.id, "没有可用的优选域名或 IP，请维护新的优选域名或 IP.")
 
 
 def update_all_proxies(message, users, proxy_message_id):
@@ -314,13 +314,13 @@ def update_all_proxies(message, users, proxy_message_id):
                     user_name = user[0]
                     cursor.execute('UPDATE user SET ip = ? WHERE name = ?', (new_proxy_ip, user_name))
 
-                message_text = f"✅ 已成功为所有用户更新代理IP或代理域名!✅\n\n 新代理IP或代理域名 ➡️ {new_proxy_ip}"
+                message_text = f"✅ 已成功为所有用户更新优选域名或 IP!✅\n\n 新的优选 ➡️ {new_proxy_ip}"
                 keyboard = InlineKeyboardMarkup()
                 return_button = InlineKeyboardButton("🔙 返回", callback_data="user_panel")
                 keyboard.add(return_button)
                 bot.send_message(message.chat.id, message_text, reply_markup=keyboard, parse_mode="HTML")
         except Exception as e:
-            error_message_txt = "❌ 无法更新代理IP或域名。 请稍后再试. ❌"
+            error_message_txt = "❌ 无法更新优选域名或 IP。 请稍后再试. ❌"
             keyboard = InlineKeyboardMarkup()
             return_button = InlineKeyboardButton("🔙 返回", callback_data="user_panel")
             keyboard.add(return_button)
@@ -349,13 +349,13 @@ def change_proxy_for_all(call):
                 user_name = user[0]
                 cursor.execute('UPDATE user SET ip = ? WHERE name = ?', (new_proxy_ip, user_name))
 
-            message_text = f"✅ 已成功为所有用户更新代理IP或代理域名!✅ \n\n 新代理IP或代理域名 ➡️ {new_proxy_ip}"
+            message_text = f"✅ 已成功为所有用户更新优选域名或 IP!✅ \n\n 新的优选 ➡️ {new_proxy_ip}"
             keyboard = InlineKeyboardMarkup()
             return_button = InlineKeyboardButton("🔙 返回", callback_data="user_panel")
             keyboard.add(return_button)
             bot.send_message(call.message.chat.id, message_text, reply_markup=keyboard, parse_mode="HTML")
     except Exception as e:
-        error_message_txt = "❌ 无法更新代理IP或代理域名。 请重试. ❌"
+        error_message_txt = "❌ 无法更新优选域名或 IP。 请稍后再试. ❌"
         keyboard = InlineKeyboardMarkup()
         return_button = InlineKeyboardButton("🔙 返回", callback_data="user_panel")
         keyboard.add(return_button)
@@ -392,12 +392,12 @@ def change_user_proxy(call):
 
         keyboard = InlineKeyboardMarkup()
         for option in options:
-            keyboard.add(InlineKeyboardButton(option, callback_data=f"newproxy_for_user:{option}:{user_name}"))
+            keyboard.add(InlineKeyboardButton(option, callback_data=f"用户新的优选:{option}:{user_name}"))
 
-        return_button = InlineKeyboardButton("🔙 Return", callback_data="user_panel")
+        return_button = InlineKeyboardButton("🔙 返回", callback_data="user_panel")
         keyboard.add(return_button)
 
-        proxy_message = bot.send_message(call.message.chat.id, f"当前代理 👤 {user_name} 和反代IP或域名 ➡️ {proxyip_from_db}\n\n 请从列表中选择新的代理IP或域名 或发送新的代理IP或域名:", reply_markup=keyboard)
+        proxy_message = bot.send_message(call.message.chat.id, f"当前用户优选 👤 {user_name} is ➡️ {proxyip_from_db}\n\n 请从列表中选择新的域名或 IP 或发送新的域名或 IP:", reply_markup=keyboard)
         proxy_message_id = proxy_message.message_id
         bot.register_next_step_handler(call.message, update_proxy_ip, user_name, connection, proxy_message_id)
 
@@ -420,17 +420,17 @@ def update_proxy_ip(message, user_name, connection, proxy_message_id):
             with connection:
                 cursor = connection.cursor()
                 cursor.execute('UPDATE user SET ip = ? WHERE name = ?', (new_proxy_ip, user_name))
-                message_text = f"✅优选IP或域名 更新成功 👤{user_name}!✅\n\n 新的优选IP或域名是 ➡️ {new_proxy_ip}"
+                message_text = f"✅优选域名或 IP 更新成功 👤{user_name}!✅\n\n 新的优选域名或 IP ➡️ {new_proxy_ip}"
                 
                 keyboard = InlineKeyboardMarkup()
-                redeploy_button = InlineKeyboardButton("🔄 重新设置", callback_data=f"redeploy:{user_name}")
+                redeploy_button = InlineKeyboardButton("🔄 重新部署", callback_data=f"redeploy:{user_name}")
                 return_button = InlineKeyboardButton("🔙 返回", callback_data="user_panel")
                 keyboard.add(redeploy_button)
                 keyboard.add(return_button)
 
                 bot.send_message(message.chat.id, message_text, reply_markup=keyboard, parse_mode="HTML")
         except Exception as e:
-            error_message_txt = "❌更新代理IP或域名 失败。 请重试 ❌"
+            error_message_txt = "❌更新优选域名或 IP 失败。 请重试 ❌"
             keyboard = InlineKeyboardMarkup()
             return_button = InlineKeyboardButton("🔙 返回", callback_data="user_panel")
             keyboard.add(return_button)
@@ -452,17 +452,17 @@ def select_new_proxy(call):
         with connection:
             cursor = connection.cursor()
             cursor.execute('UPDATE user SET ip = ? WHERE name = ?', (new_proxy_ip, user_name))
-            message_text = f"✅代理 IP或域名 更新成功 👤{user_name}!✅\n\n 新的代理IP或域名是 ➡️ {new_proxy_ip}"
+            message_text = f"✅优选域名或 IP 更新成功 👤{user_name}!✅\n\n 新的优选域名或 IP ➡️ {new_proxy_ip}"
             
             keyboard = InlineKeyboardMarkup()
-            redeploy_button = InlineKeyboardButton("🔄 重新设置", callback_data=f"redeploy:{user_name}")
+            redeploy_button = InlineKeyboardButton("🔄 重新部署", callback_data=f"redeploy:{user_name}")
             return_button = InlineKeyboardButton("🔙 返回", callback_data="user_panel")
             keyboard.add(redeploy_button)
             keyboard.add(return_button)
 
             bot.send_message(call.message.chat.id, message_text, reply_markup=keyboard, parse_mode="HTML")
     except Exception as e:
-        error_message_txt = "❌更新代理IP或域名 失败。 请重试 ❌"
+        error_message_txt = "❌更新优选域名或 IP 失败。 请重试 ❌"
         keyboard = InlineKeyboardMarkup()
         return_button = InlineKeyboardButton("🔙 返回", callback_data="user_panel")
         keyboard.add(return_button)
@@ -499,7 +499,7 @@ def qr_vless(call):
     qr_tls_img.save(img_tls_bytes, format='PNG')
     img_tls_bytes.seek(0)
 
-    bot.send_photo(call.message.chat.id, img_tls_bytes, caption="支持 TLS \n\n🤳 扫描二维码! 🤳")
+    bot.send_photo(call.message.chat.id, img_tls_bytes, caption="开启 TLS \n\n🤳 扫我啊! 🤳")
 
 
     nontls_config = create_nontls_config(subdomain, uuid, user_name)
@@ -513,7 +513,7 @@ def qr_vless(call):
     qr_nontls_img.save(img_nontls_bytes, format='PNG')
     img_nontls_bytes.seek(0)
 
-    bot.send_photo(call.message.chat.id, img_nontls_bytes, caption="未开启 TLS \n\n🤳 扫描二维码! 🤳")
+    bot.send_photo(call.message.chat.id, img_nontls_bytes, caption="关闭 TLS \n\n🤳 扫我啊! 🤳")
 
     del img_tls_bytes
     del img_nontls_bytes
@@ -524,7 +524,7 @@ def redeploy_user(call):
     bot.delete_message(call.message.chat.id, call.message.message_id)
 
     user_name = call.data.split(':')[1]
-    bot.send_message(call.message.chat.id, f"🌐重新部署 {user_name} 开始了🌐")
+    bot.send_message(call.message.chat.id, f"🌐重新部署 {user_name} 进行中🌐")
     connection = sqlite3.connect(db_path)
     cursor = connection.cursor()
 
@@ -545,7 +545,7 @@ def redeploy_user(call):
         worker_subdomain = f"sub{subdomain_from_db}"
         proxyip_from_db = row[3]
     else:
-        print(f"User details not found in the database.")
+        print(f"在数据库中找不到用户详细信息.")
         connection.close()
         return
 
@@ -569,16 +569,16 @@ def redeploy_user(call):
     try:    
         if deployment_status:
             bot.delete_message(call.message.chat.id, wait_message_id)
-            bot.send_message(call.message.chat.id, "✅✅ Workers 部署成功!✅✅")
+            bot.send_message(call.message.chat.id, "✅✅已经在 Workers 中部署成功!✅✅")
             vless_config = create_vless_config(subdomain_from_db, uuid_from_db, user_name_from_db)
             nontls_config = create_nontls_config(subdomain_from_db, uuid_from_db, user_name_from_db)
             sub_link = f"https://{worker_subdomain}/{user_name_from_db}"
             non_tls_config_html = f"<code>{nontls_config}</code>"
             vless_config_html = f"<code>{vless_config}</code>"
-            message_text = f"已开Tls: {vless_config_html}\n\n 未开Tls: {non_tls_config_html}\n\n Sub 地址: {sub_link}"
+            message_text = f"已开Tls: {vless_config_html}\n\n 未开Tls: {non_tls_config_html}\n\n 订阅地址: {sub_link}"
             menu_markup = InlineKeyboardMarkup()
             add_user_button = InlineKeyboardButton("➕ 添加用户", callback_data="add_user")
-            user_panel_button = InlineKeyboardButton("🔰 用户面板", callback_data="user_panel")
+            user_panel_button = InlineKeyboardButton("🔰 用户信息", callback_data="user_panel")
             menu_markup.add(add_user_button, user_panel_button)
             bot.send_message(call.message.chat.id, message_text, reply_markup=menu_markup, parse_mode="HTML")
         else:
@@ -587,9 +587,9 @@ def redeploy_user(call):
         bot.delete_message(call.message.chat.id, wait_message_id)
         menu_markup = InlineKeyboardMarkup()
         add_user_button = InlineKeyboardButton("➕ 添加用户", callback_data="add_user")
-        user_panel_button = InlineKeyboardButton("🔰 用户面板", callback_data="user_panel")
+        user_panel_button = InlineKeyboardButton("🔰 用户信息", callback_data="user_panel")
         menu_markup.add(add_user_button, user_panel_button)
-        bot.send_message(call.message.chat.id, f"❌部署失败，请检查日志: {str(e)}❌", reply_markup=menu_markup)
+        bot.send_message(call.message.chat.id, f"❌部署失败: {str(e)}❌", reply_markup=menu_markup)
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('delete:'))
 def delete_user(call):
@@ -609,21 +609,21 @@ def delete_user(call):
 
     menu_markup = InlineKeyboardMarkup()
     add_user_button = InlineKeyboardButton("➕ 添加用户", callback_data="add_user")
-    user_panel_button = InlineKeyboardButton("🔰 用户面板", callback_data="user_panel")
+    user_panel_button = InlineKeyboardButton("🔰 用户信息", callback_data="user_panel")
     menu_markup.add(add_user_button, user_panel_button)
-    bot.send_message(call.message.chat.id, f"✅ Worker 订阅用户名'{user_name}' 删除成功.✅", reply_markup=menu_markup)
+    bot.send_message(call.message.chat.id, f"✅ 用户配置的Worker 账号'{user_name}' 删除成功.✅", reply_markup=menu_markup)
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('add_user'))
-def add_user_gfw(call):
+def add_user_cfw(call):
 
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    cancel_button = types.KeyboardButton("返回")
+    cancel_button = types.KeyboardButton("Cancel")
     keyboard.add(cancel_button)
     
     bot.delete_message(call.message.chat.id, call.message.message_id)
     user_states[call.from_user.id] = 'waiting_for_filename'
     
-    bot.send_message(call.message.chat.id, "请输入您的新的用户名称. ", reply_markup=keyboard)
+    bot.send_message(call.message.chat.id, "请输入您想要的新用户的名称 ", reply_markup=keyboard)
 
 
 @bot.message_handler(func=lambda message: user_states.get(message.from_user.id) == 'waiting_for_filename')
@@ -631,7 +631,7 @@ def handle_filename(message):
     global proxy_message_id 
     if message.text.strip().lower() == 'cancel':
         del user_states[message.from_user.id]
-        bot.send_message(message.chat.id, "❌流程已取消.❌")
+        bot.send_message(message.chat.id, "❌进程已取消.❌")
         send_welcome(message)
         return
 
@@ -650,13 +650,13 @@ def handle_filename(message):
 
     
     if existing_user:
-        bot.send_message(message.chat.id, "使用此名称的用户已存在。 请重新输入不同的名称.")
+        bot.send_message(message.chat.id, "使用此名称的用户已存在。 请重新输入新的名称.")
     else:
         new_file_path = os.path.join(users_directory, new_file_name)
         new_subsfile_path = os.path.join(users_directory, new_subfile_name)
         create_duplicate_file(index_js_path, new_file_path)
         create_duplicate_file(subs_js_path, new_subsfile_path)
-        bot.send_message(message.chat.id, f"用户 '{new_file_name}' 已创建.✅")
+        bot.send_message(message.chat.id, f"用户名 '{new_file_name}' 已创建成功.✅")
         
         user_uuid = generate_uuid()
         replace_uuid_in_file(user_uuid, new_file_path)
@@ -681,10 +681,10 @@ def handle_filename(message):
             keyboard.add(InlineKeyboardButton(option, callback_data=f"selected_ip:{option}"))
 
         if options:
-            proxy_message = bot.send_message(message.chat.id, "请选择以下选项之一或发送新的 Cloudflare IP 或域:", reply_markup=keyboard)
+            proxy_message = bot.send_message(message.chat.id, "请选择以下选项之一或发送新的 Cloudflare 绑定后的域名或者子域名 :", reply_markup=keyboard)
             proxy_message_id = proxy_message.message_id
         else:
-            bot.send_message(message.chat.id, "没有可用的选项。请发送新的 Cloudflare IP 或域.")
+            bot.send_message(message.chat.id, "没有可用的选项。 请发送新的 Cloudflare 绑定后的域名或者子域名.")
 
         user_states[message.from_user.id] = {'state': 'waiting_for_proxy', 'file_name':  new_file_name, 'uuid': user_uuid}
         return
@@ -694,7 +694,7 @@ def handle_proxy(message):
     global proxy_message_id 
     if message.text.strip().lower() == 'cancel':
         del user_states[message.from_user.id]
-        bot.send_message(message.chat.id, "❌流程已取消.❌")
+        bot.send_message(message.chat.id, "❌进程已取消.❌")
         send_welcome(message)
         return
     if proxy_message_id:
@@ -709,13 +709,13 @@ def handle_proxy(message):
     new_file_path = os.path.join(users_directory, new_file_name)
     
     replace_proxy_ip_in_file(new_proxy_ip, new_file_path)
-    bot.send_message(message.chat.id, f"添加新的优选IP或域名设置 ➡️ {new_proxy_ip}")
+    bot.send_message(message.chat.id, f"添加新的优选IP设置 ➡️ {new_proxy_ip}")
 
     new_txt_file_name = new_file_name.replace('.js', '.txt')
     create_duplicate_file('workertemp.txt', os.path.join(users_directory, new_txt_file_name))
     new_txt_subfile_name = new_file_name.replace('.js', '_sub.txt')
     create_duplicate_file('workertemp.txt', os.path.join(users_directory, new_txt_subfile_name))
-    bot.send_message(message.chat.id, f"重复的 'workertemp.txt' 已经存在 '{new_txt_file_name}' 用户目录中.")
+    bot.send_message(message.chat.id, f"重复的 'workertemp.txt' 已经存在 '{new_txt_file_name}' in 'users' 用户目录中.")
     new_file_name_without_extension = new_file_name.replace('.js', '')
     connection = sqlite3.connect(db_path)
     cursor = connection.cursor()
@@ -746,13 +746,13 @@ def handle_selected_ip(call):
     connection.commit()
     connection.close()
     user_states[call.from_user.id]['state'] = 'waiting_for_subdomain_or_worker_name'
-    bot.send_message(call.message.chat.id, "请输入您worker的新子域或绑定CF的域名的子域名: \n ℹ️ example: subdomain.yourdomain.com \n\n ℹ️ℹ️ 不要输入您没有绑定CF的域名 !")
+    bot.send_message(call.message.chat.id, "请输入您worker的新子域或绑定CF的域名的子域名: \n ℹ️ example: subdomain.yourdomain.com \n\n ℹ️ℹ️ 不要输入您没有绑定CF的域名!")
 
 @bot.message_handler(func=lambda message: user_states.get(message.from_user.id, {}).get('state') == 'waiting_for_subdomain_or_worker_name')
 def handle_subdomain_and_worker_name(message):
     if message.text.strip().lower() == 'cancel':
         del user_states[message.from_user.id]
-        bot.send_message(message.chat.id, "❌流程已取消.❌")
+        bot.send_message(message.chat.id, "❌进程已取消.❌")
         send_welcome(message)
         return
     bot.delete_message(message.chat.id, message.message_id - 1)
@@ -766,7 +766,7 @@ def handle_subdomain_and_worker_name(message):
     connection.close()
 
     if existing_user:
-        bot.send_message(message.chat.id, f"❌子域名 '{new_subdomain}' 已经存在。 请核对后重新输入.❌")
+        bot.send_message(message.chat.id, f"❌订阅地址 '{new_subdomain}' 已经存在。 请核对后重新输入.❌")
         
     else:
         new_file_name = user_states[message.from_user.id]['file_name']
@@ -820,10 +820,10 @@ def handle_subdomain_and_worker_name(message):
             sub_link = f"https://{subworker_host}/{new_file_name_without_extension}"
             non_tls_config_html = f"<code>{nontls_config}</code>"
             vless_config_html = f"<code>{vless_config}</code>"
-            message_text = f"已开Tls: {vless_config_html}\n\n 未开Tls: {non_tls_config_html}\n\n Sub 地址: {sub_link}"
+            message_text = f"已开: {vless_config_html}\n\n 未开Tls: {non_tls_config_html}\n\n 订阅地址: {sub_link}"
             menu_markup = InlineKeyboardMarkup()
             add_user_button = InlineKeyboardButton("➕ 添加用户", callback_data="add_user")
-            user_panel_button = InlineKeyboardButton("🔰 用户面板", callback_data="user_panel")
+            user_panel_button = InlineKeyboardButton("🔰 用户信息", callback_data="user_panel")
             menu_markup.add(add_user_button, user_panel_button)
             bot.send_message(message.chat.id, message_text, reply_markup=menu_markup, parse_mode="HTML")
             del user_states[message.from_user.id]
@@ -832,7 +832,7 @@ def handle_subdomain_and_worker_name(message):
             bot.delete_message(message.chat.id, wait_message_id)
             menu_markup = InlineKeyboardMarkup()
             add_user_button = InlineKeyboardButton("➕ 添加用户", callback_data="add_user")
-            user_panel_button = InlineKeyboardButton("🔰 用户面板", callback_data="user_panel")
+            user_panel_button = InlineKeyboardButton("🔰 用户信息", callback_data="user_panel")
             menu_markup.add(add_user_button, user_panel_button)
             bot.send_message(message.chat.id, "❌部署失败。 请检查日志.❌", reply_markup=menu_markup)
 
@@ -840,14 +840,14 @@ def create_vless_config(new_subdomain, user_uuid, new_file_name):
     if new_file_name.endswith('.js'):
         new_file_name = new_file_name[:-3]
 
-    vless_config = f"vless://{user_uuid}@{new_subdomain}:443?encryption=none&security=tls&sni={new_subdomain}&fp=randomized&type=ws&host={new_subdomain}&path=%2F%3Fed%3D2048#{new_file_name}"
+    vless_config = f"vless://{user_uuid}@cfip.xxxxxxxx.tk:443?encryption=none&security=tls&sni={new_subdomain}&fp=randomized&type=ws&host={new_subdomain}&path=%2F%3Fed%3D2048#{new_file_name}"
     return vless_config
 
 def create_nontls_config(new_subdomain, user_uuid, new_file_name):
     if new_file_name.endswith('.js'):
         new_file_name = new_file_name[:-3]
 
-    nontls_config = f"vless://{user_uuid}@{new_subdomain}:80?encryption=none&security=&sni={new_subdomain}&fp=randomized&type=ws&host={new_subdomain}&path=%2F%3Fed%3D2048#{new_file_name}"
+    nontls_config = f"vless://{user_uuid}@cfip.xxxxxxxx.tk:80?encryption=none&security=&sni={new_subdomain}&fp=randomized&type=ws&host={new_subdomain}&path=%2F%3Fed%3D2048#{new_file_name}"
     return nontls_config
 
 def run_nvm_use_and_wrangler_deploy(new_file_path):
@@ -859,7 +859,7 @@ def run_nvm_use_and_wrangler_deploy(new_file_path):
 
     print(result.stdout)
 
-    return "当前部署 ID:" in result.stdout
+    return "Current Deployment ID:" in result.stdout
 
 
 def update_wrangler_toml(new_txt_file_path):
@@ -963,10 +963,10 @@ def start_bot():
         try:
             bot.polling(none_stop=True)
         except KeyboardInterrupt:
-            print("\n机器人已停止.")
+            print("\n机器人已被停止.")
             break
         except Exception as e:
-            print(f"发生错误: {e}")
+            print(f"机器启动发生错误: {e}")
             time.sleep(10)
 
 if __name__ == "__main__":
