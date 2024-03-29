@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "cloning repo"
-git clone https://github.com/avotc/GFW-BOT.git
+git clone https://github.com/avotcorg/GFW-BOT.git
 cd GFW-BOT
 echo "安装要求"
 chmod +x requirement.sh
