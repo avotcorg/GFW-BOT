@@ -62,7 +62,7 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/avotcorg/GFW-BOT/main/in
 4. in your Dashboard section Select Files and and Click on "Open Bash Console Here"
 5.  Clone this repository:
  ```bash
- git clone https://github.com/avotc/GFW-BOT.git
+ git clone https://github.com/avotcorg/GFW-BOT.git
 ```
 6. Navigate to the project directory:
 
