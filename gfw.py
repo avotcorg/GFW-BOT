@@ -617,7 +617,7 @@ def delete_user(call):
 def add_user_gfw(call):
 
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    cancel_button = types.KeyboardButton("Cancel")
+    cancel_button = types.KeyboardButton("返回")
     keyboard.add(cancel_button)
     
     bot.delete_message(call.message.chat.id, call.message.message_id)
