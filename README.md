@@ -1,5 +1,6 @@
-# CFW-BOT V0.03
+# GFW-BOT V0.03
 Cloudflare Woker 机器人！ 不需要服务器，只需创建纯粹的 Xray 链接，所有这些都可以在 PythonAnywhere 上顺畅运行。 便捷访问互联网！ ✨"
+#https://github.com/2ri4eUI/CFW-BOT  官网地址
 
 ![image](https://github.com/2ri4eUI/CFW-BOT/assets/139592104/c751fbf4-ebce-441e-aca9-ce121f27d258)
 
@@ -49,7 +50,7 @@ i will release the final version soon!
 just copy and run and send tokens when it ask for them :
 
 ```bash
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/avotc/GFW-BOT/main/install.sh)"
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/avotcorg/GFW-BOT/main/install.sh)"
 ```
 ## LAZY INSTALL
 1. Register for a free account on [PythonAnywhere](https://www.pythonanywhere.com).
@@ -61,12 +62,12 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/avotc/GFW-BOT/main/insta
 4. in your Dashboard section Select Files and and Click on "Open Bash Console Here"
 5.  Clone this repository:
  ```bash
- git clone https://github.com/2ri4eUI/CFW-BOT.git
+ git clone https://github.com/avotc/GFW-BOT.git
 ```
 6. Navigate to the project directory:
 
  ```bash
- cd CFW-BOT
+ cd GFW-BOT
  ```
 7. Make `requirement.sh` executable:
  ```bash
@@ -90,7 +91,7 @@ you can run this to solve the issue:
  ```
 11. Start the bot:
  ```bash
- python3 cfw.py
+ python3 gfw.py
  ```
 ## ADVANCED INSTALL
 
