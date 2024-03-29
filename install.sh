@@ -1,14 +1,14 @@
 #!/bin/bash
 echo "cloning repo"
-git clone https://github.com/2ri4eUI/CFW-BOT.git
-cd CFW-BOT
-echo "installing requirments"
+git clone https://github.com/avotc/GFW-BOT.git
+cd GFW-BOT
+echo "安装要求"
 chmod +x requirement.sh
 ./requirement.sh
 python3 dos2unix.py
-echo " now you can start adding your api tokens"
+echo " 现在您可以开始添加您的 api 令牌等参数"
 python3 install.py
-echo "Installation  complete"
-echo "STARTING BOT..."
-python3 cfw.py
+echo "安装完成"
+echo "启动机器人..."
+python3 gfw.py
 
