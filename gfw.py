@@ -420,7 +420,7 @@ def update_proxy_ip(message, user_name, connection, proxy_message_id):
             with connection:
                 cursor = connection.cursor()
                 cursor.execute('UPDATE user SET ip = ? WHERE name = ?', (new_proxy_ip, user_name))
-                message_text = f"✅代理IP或域名 更新成功 👤{user_name}!✅\n\n 新的代理IP或域名是 ➡️ {new_proxy_ip}"
+                message_text = f"✅优选IP或域名 更新成功 👤{user_name}!✅\n\n 新的优选IP或域名是 ➡️ {new_proxy_ip}"
                 
                 keyboard = InlineKeyboardMarkup()
                 redeploy_button = InlineKeyboardButton("🔄 重新设置", callback_data=f"redeploy:{user_name}")
@@ -684,7 +684,7 @@ def handle_filename(message):
             proxy_message = bot.send_message(message.chat.id, "请选择以下选项之一或发送新的 Cloudflare IP 或域:", reply_markup=keyboard)
             proxy_message_id = proxy_message.message_id
         else:
-            bot.send_message(message.chat.id, "没有可用的选项。 请重新选择.")
+            bot.send_message(message.chat.id, "没有可用的选项。请发送新的 Cloudflare IP 或域.")
 
         user_states[message.from_user.id] = {'state': 'waiting_for_proxy', 'file_name':  new_file_name, 'uuid': user_uuid}
         return
@@ -709,7 +709,7 @@ def handle_proxy(message):
     new_file_path = os.path.join(users_directory, new_file_name)
     
     replace_proxy_ip_in_file(new_proxy_ip, new_file_path)
-    bot.send_message(message.chat.id, f"添加新的反代设置 ➡️ {new_proxy_ip}")
+    bot.send_message(message.chat.id, f"添加新的优选IP或域名设置 ➡️ {new_proxy_ip}")
 
     new_txt_file_name = new_file_name.replace('.js', '.txt')
     create_duplicate_file('workertemp.txt', os.path.join(users_directory, new_txt_file_name))
@@ -732,7 +732,7 @@ def handle_selected_ip(call):
     new_file_name = user_states[call.from_user.id]['file_name']
     new_file_path = os.path.join(users_directory, new_file_name)
     replace_proxy_ip_in_file(selected_ip, new_file_path)
-    bot.send_message(call.message.chat.id, f"添加了选定的代理设置 ➡️ {selected_ip}")
+    bot.send_message(call.message.chat.id, f"添加了选定的优选IP或域名设置 ➡️ {selected_ip}")
 
     new_txt_file_name = new_file_name.replace('.js', '.txt')
     create_duplicate_file('workertemp.txt', os.path.join(users_directory, new_txt_file_name))
