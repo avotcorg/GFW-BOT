@@ -61,11 +61,11 @@ def proxylist(call):
     if os.path.isfile(filename):
         with open(filename, 'r') as file:
             proxies_content = file.read()
-        bot.send_message(call.message.chat.id, f"📁| 当前优选地址:\n<code>{proxies_content}</code>", parse_mode="HTML")
+        bot.send_message(call.message.chat.id, f"📁| 当前反代IP或域名:\n<code>{proxies_content}</code>", parse_mode="HTML")
     else:
-        bot.send_message(call.message.chat.id, "proxies.txt 中未找到优选IP或域名.")
+        bot.send_message(call.message.chat.id, "proxies.txt 中未找到反代IP或域名.")
     
-    bot.send_message(call.message.chat.id, "请发送新优选的优选域名，每次发送一条.\n\n 您可以使用它们来更改用户优选域名")
+    bot.send_message(call.message.chat.id, "请发送新反代IP或域名，每次发送一条.\n\n 您可以使用它们来更改用户反代IP或域名")
     bot.register_next_step_handler(call.message, handle_proxies_input)
 
 def handle_proxies_input(message):
@@ -81,13 +81,13 @@ def handle_proxies_input(message):
             with open(filename, 'w') as file:
                 for proxy in proxies:
                     file.write(proxy.strip() + '\n')
-            bot.send_message(message.chat.id, "✅优选域名保存成功.✅")
+            bot.send_message(message.chat.id, "✅反代IP或域名保存成功.✅")
             send_welcome(message)
         else:
-            bot.send_message(message.chat.id, "没有优选域名。 请发送至少一条优选域名.")
+            bot.send_message(message.chat.id, "没有反代IP或域名。 请发送至少一条反代IP或域名.")
             send_welcome(message)
     else:
-        bot.send_message(message.chat.id, "输入无效。 请以文本格式发送优选域名.")
+        bot.send_message(message.chat.id, "输入无效。 请以文本格式发送反代IP或域名.")
         send_welcome(message)
 
 @bot.callback_query_handler(func=lambda call: call.data == 'subscriptions')
@@ -95,10 +95,10 @@ def subscriptions(call):
     load_dotenv()
     ip_api = os.getenv('IP_API')
     bot.delete_message(call.message.chat.id, call.message.message_id)
-    message_text = f"优选域名: {ip_api}"
+    message_text = f"优选域名列表地址: {ip_api}"
 
     keyboard = [
-        [InlineKeyboardButton("更改优选域名", callback_data="change_ip_api"),
+        [InlineKeyboardButton("更改优选域名列表地址", callback_data="change_ip_api"),
          InlineKeyboardButton("不改变返回", callback_data="keep_ip_api")]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
@@ -136,7 +136,7 @@ def handle_new_api_value(message):
     os.environ['IP_API'] = new_api_value
 
     user_states[message.from_user.id] = None
-    bot.send_message(message.chat.id, f"优选域名 已更新为: '{new_api_value}'")
+    bot.send_message(message.chat.id, f"优选域名列表已更新为: '{new_api_value}'")
     send_welcome(message)
 
 @bot.callback_query_handler(func=lambda call: call.data == 'return')
@@ -397,7 +397,7 @@ def change_user_proxy(call):
         return_button = InlineKeyboardButton("🔙 返回", callback_data="user_panel")
         keyboard.add(return_button)
 
-        proxy_message = bot.send_message(call.message.chat.id, f"当前用户优选 👤 {user_name} is ➡️ {proxyip_from_db}\n\n 请从列表中选择新的域名或 IP 或发送新的域名或 IP:", reply_markup=keyboard)
+        proxy_message = bot.send_message(call.message.chat.id, f"当前用户 👤 {user_name} 优选 ➡️ {proxyip_from_db}\n\n 请从列表中选择新的域名或 IP 或发送新的域名或 IP:", reply_markup=keyboard)
         proxy_message_id = proxy_message.message_id
         bot.register_next_step_handler(call.message, update_proxy_ip, user_name, connection, proxy_message_id)
 
