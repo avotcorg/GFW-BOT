@@ -173,7 +173,7 @@ def user_panel_cfw(call):
     
     connection.close()
 
-    bot.send_message(call.message.chat.id, "Select a user:", reply_markup=keyboard)
+    bot.send_message(call.message.chat.id, "选择用户:", reply_markup=keyboard)
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('user:'))
 def user_info_callback(call):
