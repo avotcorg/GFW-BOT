@@ -715,7 +715,7 @@ def handle_proxy(message):
     create_duplicate_file('workertemp.txt', os.path.join(users_directory, new_txt_file_name))
     new_txt_subfile_name = new_file_name.replace('.js', '_sub.txt')
     create_duplicate_file('workertemp.txt', os.path.join(users_directory, new_txt_subfile_name))
-    bot.send_message(message.chat.id, f"重复的 'workertemp.txt' 已经存在 '{new_txt_file_name}' in 'users' 用户目录中.")
+    bot.send_message(message.chat.id, f"重复的 'workertemp.txt' 已经存在 '{new_txt_file_name}' 的用户目录中.")
     new_file_name_without_extension = new_file_name.replace('.js', '')
     connection = sqlite3.connect(db_path)
     cursor = connection.cursor()
